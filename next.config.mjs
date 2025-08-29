@@ -6,6 +6,10 @@ const nextConfig = {
   experimental: {
     // Desabilitar geração estática automática
     isrMemoryCacheSize: 0,
+    // Desabilitar otimizações estáticas
+    staticPageGenerationTimeout: 0,
+    // Forçar renderização dinâmica
+    dynamicParams: true,
   },
   
   // Configurações de ambiente
@@ -33,6 +37,7 @@ const nextConfig = {
   // Configurações de imagem
   images: {
     domains: ['localhost', 'zibuyabpsvgulvigvdtb.supabase.co'],
+    unoptimized: true,
   },
   
   // Configurações de build
@@ -61,8 +66,68 @@ const nextConfig = {
       };
     }
     
+    // Desabilitar otimizações que causam problemas
+    config.optimization = {
+      ...config.optimization,
+      splitChunks: false,
+      minimize: false,
+    };
+    
     return config;
   },
+  
+  // Desabilitar geração estática para todas as páginas
+  trailingSlash: false,
+  
+  // Configurações de build estático
+  staticPageGenerationTimeout: 0,
+  
+  // Forçar renderização dinâmica
+  generateStaticParams: async () => {
+    return [];
+  },
+  
+  // Desabilitar SSG completamente
+  generateBuildId: async () => {
+    return 'build-' + Date.now();
+  },
+  
+  // Configurações de build
+  distDir: '.next',
+  
+  // Desabilitar otimizações que causam problemas
+  swcMinify: false,
+  
+  // Configurações de compressão
+  compress: false,
+  
+  // Configurações de cache
+  onDemandEntries: {
+    maxInactiveAge: 25 * 1000,
+    pagesBufferLength: 2,
+  },
+  
+  // Configurações de build estático
+  async rewrites() {
+    return [];
+  },
+  
+  // Configurações de redirecionamento
+  async redirects() {
+    return [];
+  },
+  
+  // Configurações de build
+  poweredByHeader: false,
+  
+  // Configurações de compressão
+  compress: false,
+  
+  // Configurações de otimização
+  optimizeFonts: false,
+  
+  // Configurações de build
+  generateEtags: false,
 };
 
 export default nextConfig;

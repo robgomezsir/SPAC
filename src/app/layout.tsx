@@ -3,10 +3,10 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "../components/layout/Header";
 import Footer from "../components/layout/Footer";
-import { AuthProvider } from "../context/AuthContext";
 
 // Forçar renderização dinâmica para evitar SSG
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -26,13 +26,11 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body className={`${inter.variable} font-sans bg-neutral-50 text-neutral-800`}>
-        <AuthProvider>
-          <Header />
-          <main className="min-h-screen">
-            {children}
-          </main>
-          <Footer />
-        </AuthProvider>
+        <Header />
+        <main className="min-h-screen">
+          {children}
+        </main>
+        <Footer />
       </body>
     </html>
   );
