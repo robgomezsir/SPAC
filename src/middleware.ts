@@ -1,17 +1,17 @@
-import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
 
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
-  const supabase = createMiddlewareClient({ req, res });
+  const { pathname } = req.nextUrl;
 
   try {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-
-    const { pathname } = req.nextUrl;
+    // Criar cliente Supabase para middleware
+    const supabase = createMiddlewareClient({ req, res });
+    
+    // Verificar sessão do usuário
+    const { data: { session } } = await supabase.auth.getSession();
 
     // Rotas de autenticação
     const isAuthRoute = pathname === '/auth/login' || pathname === '/auth/register';
@@ -19,53 +19,41 @@ export async function middleware(req: NextRequest) {
     // Rotas protegidas que requerem autenticação
     const isProtectedRoute = pathname.startsWith('/dashboard') || 
                            pathname.startsWith('/form') || 
-                           pathname.startsWith('/settings');
+                           pathname.startsWith('/settings') ||
+                           pathname.startsWith('/admin');
     
     // Rotas administrativas que requerem permissões específicas
     const isAdminRoute = pathname.startsWith('/admin');
-    
-    // Rotas de avaliação
-    const isAssessmentRoute = pathname.startsWith('/form');
 
-    // Se não há sessão e tenta acessar rota protegida
-    if (!session && isProtectedRoute) {
-      const redirectUrl = req.nextUrl.clone();
-      redirectUrl.pathname = '/auth/login';
+    // Lógica de proteção de rotas
+    if (isProtectedRoute && !session) {
+      // Usuário não autenticado tentando acessar rota protegida
+      const redirectUrl = new URL('/auth/login', req.url);
       redirectUrl.searchParams.set('redirect', pathname);
       return NextResponse.redirect(redirectUrl);
     }
 
-    // Se há sessão e tenta acessar rota de auth
-    if (session && isAuthRoute) {
-      const redirectUrl = req.nextUrl.clone();
-      redirectUrl.pathname = '/dashboard';
-      return NextResponse.redirect(redirectUrl);
+    if (isAuthRoute && session) {
+      // Usuário autenticado tentando acessar rota de auth
+      return NextResponse.redirect(new URL('/dashboard', req.url));
     }
 
-    // Se há sessão e tenta acessar rota administrativa
-    if (session && isAdminRoute) {
-      // Verificar perfil do usuário para controle de acesso
+    // Verificar permissões para rotas administrativas
+    if (isAdminRoute && session) {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-          const { data: profile } = await supabase
-            .from('user_profiles')
-            .select('role')
-            .eq('id', user.id)
-            .single();
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', session.user.id)
+          .single();
 
-          // Apenas ADMIN e SUPER_ADMIN podem acessar rotas administrativas
-          if (!profile || (profile.role !== 'ADMIN' && profile.role !== 'SUPER_ADMIN')) {
-            const redirectUrl = req.nextUrl.clone();
-            redirectUrl.pathname = '/dashboard';
-            return NextResponse.redirect(redirectUrl);
-          }
+        if (!profile || (profile.role !== 'ADMIN' && profile.role !== 'RH')) {
+          // Usuário sem permissões administrativas
+          return NextResponse.redirect(new URL('/dashboard', req.url));
         }
       } catch (error) {
-        console.error('Erro ao verificar perfil do usuário:', error);
-        const redirectUrl = req.nextUrl.clone();
-        redirectUrl.pathname = '/dashboard';
-        return NextResponse.redirect(redirectUrl);
+        console.error('Erro ao verificar permissões:', error);
+        return NextResponse.redirect(new URL('/dashboard', req.url));
       }
     }
 
@@ -79,18 +67,18 @@ export async function middleware(req: NextRequest) {
   } catch (error) {
     console.error('Erro no middleware:', error);
     
-    // Em caso de erro, redirecionar para login
-    const redirectUrl = req.nextUrl.clone();
-    redirectUrl.pathname = '/auth/login';
-    return NextResponse.redirect(redirectUrl);
+    // Em caso de erro, aplicar apenas headers de segurança
+    res.headers.set('X-Frame-Options', 'DENY');
+    res.headers.set('X-Content-Type-Options', 'nosniff');
+    res.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+    res.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+    
+    return res;
   }
 }
 
 export const config = {
   matcher: [
-    '/dashboard/:path*',
-    '/avaliacao/:path*',
-    '/login',
-    '/cadastro',
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
   ],
 };

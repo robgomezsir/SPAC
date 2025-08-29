@@ -2,15 +2,21 @@
   "name": "spac",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
+    "dev:env": "powershell -Command \"Copy-Item env.example .env.local\" && next dev",
     "build": "next build",
+    "build:env": "powershell -Command \"Copy-Item env.example .env.local\" && next build",
     "start": "next start",
+    "start:env": "powershell -Command \"Copy-Item env.example .env.local\" && next start",
     "lint": "next lint",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "setup:env": "powershell -Command \"Copy-Item env.example .env.local\"",
+    "clean:env": "powershell -Command \"Remove-Item .env.local -Force -ErrorAction SilentlyContinue\""
   },
   "dependencies": {
     "@supabase/auth-helpers-nextjs": "^0.10.0",
