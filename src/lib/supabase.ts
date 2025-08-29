@@ -1,10 +1,27 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://zibuyabpsvgulvigvdtb.supabase.co'
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InppYnV5YWJwc3ZndWx2aWd2ZHRiIiwicm9sZSI6ImFub24iLCJiYXQiOjE3NTYxNzQ3NjUsImV4cCI6MjA3MTc1MDc2NX0.a1EoCpinPFQqBd_ZYOT7n7iViH3NCwIzldzcBLlvfNo'
+// Validação rigorosa de variáveis de ambiente
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
+// Validação de segurança para variáveis de ambiente
 if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Supabase URL and Anon Key must be defined in the environment variables.');
+  throw new Error(
+    '❌ CRÍTICO: Variáveis de ambiente do Supabase não configuradas!\n' +
+    'Crie um arquivo .env.local na raiz do projeto com:\n' +
+    'NEXT_PUBLIC_SUPABASE_URL=sua-url-aqui\n' +
+    'NEXT_PUBLIC_SUPABASE_ANON_KEY=sua-chave-aqui\n' +
+    '\nPara produção, NUNCA use valores hardcoded!'
+  );
+}
+
+// Validação adicional de formato das variáveis
+if (!supabaseUrl.startsWith('https://') || !supabaseUrl.includes('.supabase.co')) {
+  throw new Error('❌ URL do Supabase inválida. Deve ser uma URL HTTPS válida do Supabase.');
+}
+
+if (supabaseAnonKey.length < 100) {
+  throw new Error('❌ Chave anônima do Supabase inválida. Verifique o formato.');
 }
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);

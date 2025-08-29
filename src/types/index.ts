@@ -1,4 +1,4 @@
-// Tipos de usuário
+// Tipos de usuário com controle de acesso
 export interface User {
   id: string;
   email: string;
@@ -6,8 +6,32 @@ export interface User {
   telefone?: string;
   empresa?: string;
   cargo?: string;
+  role: UserRole;
+  is_active: boolean;
+  permissions: Permission[];
   created_at?: string;
   updated_at?: string;
+}
+
+// Tipos de perfil de usuário
+export type UserRole = 'CANDIDATE' | 'RH' | 'ADMIN' | 'SUPER_ADMIN';
+
+// Permissões do sistema
+export interface Permission {
+  id: string;
+  name: string;
+  resource: string;
+  action: 'create' | 'read' | 'update' | 'delete' | 'manage';
+  conditions?: Record<string, any>;
+}
+
+// Perfil de usuário estendido
+export interface UserProfile extends User {
+  last_login?: string;
+  login_count: number;
+  failed_login_attempts: number;
+  locked_until?: string;
+  password_changed_at?: string;
 }
 
 // Tipos de candidato
