@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
-import { supabase } from '../../lib/supabaseClient';
+import { supabase } from '../../lib/supabase';
 import Button from '../../components/ui/Button';
 
 interface Categoria {
@@ -14,7 +14,7 @@ interface Categoria {
 interface Pergunta {
   id: number;
   texto: string;
-  categorias: Categoria;
+  categorias: Categoria[];
 }
 
 interface Respostas {
@@ -150,7 +150,7 @@ export default function AvaliacaoPage() {
       <div className="w-full max-w-2xl bg-white p-6 sm:p-8 rounded-lg shadow-lg">
         <header className="mb-6">
           <div className="flex justify-between items-center mb-2">
-            <h2 className="text-sm font-semibold text-blue-600 uppercase tracking-wider">{currentQuestion.categorias?.nome || 'Geral'}</h2>
+            <h2 className="text-sm font-semibold text-blue-600 uppercase tracking-wider">{currentQuestion.categorias?.[0]?.nome || 'Geral'}</h2>
             <span className="text-sm text-gray-500">
               Pergunta {currentQuestionIndex + 1} de {perguntas.length}
             </span>

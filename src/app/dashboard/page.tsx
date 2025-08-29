@@ -1,7 +1,7 @@
 'use client';
 
 import { useAuth } from '../../context/AuthContext';
-import { supabase } from '../../lib/supabaseClient';
+import { supabase } from '../../lib/supabase';
 import { useRouter } from 'next/navigation';
 import Button from '../../components/ui/Button';
 
@@ -11,12 +11,12 @@ export default function DashboardPage() {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    router.push('/login');
+    router.push('/auth/login');
     router.refresh();
   };
 
   const handleStartAssessment = () => {
-    router.push('/avaliacao');
+    router.push('/form');
   };
   
   if (!user) {

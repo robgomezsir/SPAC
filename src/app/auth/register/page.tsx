@@ -1,10 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { supabase } from '../../lib/supabaseClient';
+import { supabase } from '../../../lib/supabase';
 import Link from 'next/link';
-import Input from '../../components/ui/Input';
-import Button from '../../components/ui/Button';
+import Input from '../../../components/ui/Input';
+import Button from '../../../components/ui/Button';
 
 export default function CadastroPage() {
   const [name, setName] = useState('');
@@ -50,7 +50,7 @@ export default function CadastroPage() {
           </h1>
           <p className="mt-2 text-center text-sm text-gray-600">
             Ou{' '}
-            <Link href="/login" className="font-medium text-blue-600 hover:text-blue-500">
+            <Link href="/auth/login" className="font-medium text-blue-600 hover:text-blue-500">
               faça login se já possui uma conta
             </Link>
           </p>

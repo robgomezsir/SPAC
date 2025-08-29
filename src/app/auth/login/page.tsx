@@ -2,10 +2,10 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { supabase } from '../../lib/supabaseClient';
+import { supabase } from '../../../lib/supabase';
 import Link from 'next/link';
-import Input from '../../components/ui/Input';
-import Button from '../../components/ui/Button';
+import Input from '../../../components/ui/Input';
+import Button from '../../../components/ui/Button';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -42,7 +42,7 @@ export default function LoginPage() {
           </h1>
           <p className="mt-2 text-center text-sm text-gray-600">
             Ou{' '}
-            <Link href="/cadastro" className="font-medium text-blue-600 hover:text-blue-500">
+            <Link href="/auth/register" className="font-medium text-blue-600 hover:text-blue-500">
               crie uma nova conta
             </Link>
           </p>
