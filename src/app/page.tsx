@@ -2,6 +2,9 @@
 
 import Link from 'next/link';
 
+// Forçar renderização dinâmica para evitar SSG
+export const dynamic = 'force-dynamic';
+
 export default function HomePage() {
   return (
     <div className="flex flex-col items-center justify-center py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-50 to-indigo-100">

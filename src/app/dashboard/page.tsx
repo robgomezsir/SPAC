@@ -6,6 +6,9 @@ import { useRouter } from 'next/navigation';
 import Button from '../../components/ui/Button';
 import { useState, useEffect } from 'react';
 
+// Forçar renderização dinâmica para evitar SSG
+export const dynamic = 'force-dynamic';
+
 export default function DashboardPage() {
   const { user, loading } = useAuth();
   const router = useRouter();

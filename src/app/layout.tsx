@@ -5,6 +5,9 @@ import Header from "../components/layout/Header";
 import Footer from "../components/layout/Footer";
 import { AuthProvider } from "../context/AuthContext";
 
+// Forçar renderização dinâmica para evitar SSG
+export const dynamic = 'force-dynamic';
+
 const inter = Inter({ 
   subsets: ["latin"],
   variable: '--font-inter',
